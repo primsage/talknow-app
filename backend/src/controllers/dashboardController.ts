@@ -32,6 +32,11 @@ export const getStats = async (req: Request, res: Response) => {
 export const getSessions = async (req: Request, res: Response) => {
   try {
     const businessId = (req as any).user.businessId;
+    const business = await Business.findById(businessId);
+    if (!business || business.subscription.plan === 'free') {
+      return res.status(403).json({ message: 'Session tracking is not available on your plan' });
+    }
+
     const sessions = await Session.find({ businessId }).sort({ updatedAt: -1 });
     res.json(sessions);
   } catch (err: any) {
@@ -42,8 +47,12 @@ export const getSessions = async (req: Request, res: Response) => {
 export const getHeatmapData = async (req: Request, res: Response) => {
   try {
     const businessId = (req as any).user.businessId;
-    const url = req.query['url'] as string;
+    const business = await Business.findById(businessId);
+    if (!business || !['premium', 'extra_premium'].includes(business.subscription.plan)) {
+      return res.status(403).json({ message: 'Heatmap analysis is not available on your plan' });
+    }
 
+    const url = req.query['url'] as string;
     if (!url) return res.status(400).json({ message: 'URL is required' });
 
     const sessions = await Session.find({

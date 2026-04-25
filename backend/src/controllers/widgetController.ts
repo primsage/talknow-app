@@ -9,7 +9,7 @@ import { createGoogleMeet, createZoomMeeting } from '../services/meetingService'
 export const getWidgetConfig = async (req: Request, res: Response) => {
   try {
     const { businessId } = req.params;
-    const business = await Business.findById(businessId).select('name widgetSettings');
+    const business = await Business.findById(businessId).select('name widgetSettings subscription.plan');
     if (!business) return res.status(404).json({ message: 'Business not found' });
     res.json(business);
   } catch (err: any) {
@@ -20,6 +20,11 @@ export const getWidgetConfig = async (req: Request, res: Response) => {
 export const trackEvents = async (req: Request, res: Response) => {
   try {
     const { businessId, sessionId, events, screen } = req.body;
+
+    const business = await Business.findById(businessId);
+    if (!business || business.subscription.plan === 'free') {
+      return res.status(403).json({ message: 'Tracking not allowed on this plan' });
+    }
 
     let session = await Session.findOne({ businessId, sessionId });
 

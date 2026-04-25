@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Fab, Box, Paper, IconButton, Typography, List, ListItem, ListItemText, ListItemIcon, TextField, Button } from '@mui/material';
-import { Chat, WhatsApp, Event, Phone, Message, Close, Send } from '@mui/icons-material';
+import { Fab, Box, Paper, IconButton, Typography, List, ListItem, ListItemButton, ListItemText, ListItemIcon, TextField, Button } from '@mui/material';
+import { Chat, WhatsApp, Event, Phone, Close, Send } from '@mui/icons-material';
 import axios from 'axios';
 import { io, Socket } from 'socket.io-client';
 import Tracker from '../api/Tracker';
@@ -21,9 +21,13 @@ const Widget: React.FC = () => {
     const fetchConfig = async () => {
       try {
         const res = await axios.get(`${API_URL}/widget/config/${businessId}`);
-        setConfig(res.data);
-        // Initialize Tracker once we have the businessId
-        new Tracker(businessId);
+        const businessData = res.data;
+        setConfig(businessData);
+
+        // Only initialize tracker if not on free plan
+        if (businessData.subscription?.plan !== 'free') {
+          new Tracker(businessId);
+        }
       } catch (err) {
         console.error('Failed to load widget config', err);
       }
@@ -66,21 +70,29 @@ const Widget: React.FC = () => {
       case 'menu':
         return (
           <List>
-            <ListItem button onClick={() => setView('chat')}>
-              <ListItemIcon><Chat color="primary" /></ListItemIcon>
-              <ListItemText primary="Live Chat" secondary="Chat with us now" />
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => setView('chat')}>
+                <ListItemIcon><Chat color="primary" /></ListItemIcon>
+                <ListItemText primary="Live Chat" secondary="Chat with us now" />
+              </ListItemButton>
             </ListItem>
-            <ListItem button onClick={() => window.open(`https://wa.me/${config?.widgetSettings?.whatsappNumber || ''}`)}>
-              <ListItemIcon><WhatsApp sx={{ color: '#25D366' }} /></ListItemIcon>
-              <ListItemText primary="WhatsApp" secondary="Instant reply" />
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => window.open(`https://wa.me/${config?.widgetSettings?.whatsappNumber || ''}`)}>
+                <ListItemIcon><WhatsApp sx={{ color: '#25D366' }} /></ListItemIcon>
+                <ListItemText primary="WhatsApp" secondary="Instant reply" />
+              </ListItemButton>
             </ListItem>
-            <ListItem button onClick={() => setView('booking')}>
-              <ListItemIcon><Event color="secondary" /></ListItemIcon>
-              <ListItemText primary="Book a Call" secondary="Schedule a meeting" />
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => setView('booking')}>
+                <ListItemIcon><Event color="secondary" /></ListItemIcon>
+                <ListItemText primary="Book a Call" secondary="Schedule a meeting" />
+              </ListItemButton>
             </ListItem>
-            <ListItem button onClick={() => setView('lead')}>
-              <ListItemIcon><Phone color="info" /></ListItemIcon>
-              <ListItemText primary="Request Callback" secondary="We'll call you back" />
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => setView('lead')}>
+                <ListItemIcon><Phone color="info" /></ListItemIcon>
+                <ListItemText primary="Request Callback" secondary="We'll call you back" />
+              </ListItemButton>
             </ListItem>
           </List>
         );

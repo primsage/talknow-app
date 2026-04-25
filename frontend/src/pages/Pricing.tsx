@@ -5,10 +5,10 @@ import api from '../api/axios';
 
 const Pricing: React.FC = () => {
   const plans = [
-    { name: 'Free', price: '0', leads: '50', color: '#64748b', id: 'free' },
-    { name: 'Pro', price: '29', leads: '1,000', color: '#2563eb', id: 'pro' },
-    { name: 'Premium', price: '99', leads: '5,000', color: '#7c3aed', id: 'premium' },
-    { name: 'Extra Premium', price: '199', leads: 'Unlimited', color: '#db2777', id: 'extra_premium' },
+    { name: 'Free', price: '0', leads: '50', tracking: false, heatmap: false, color: '#64748b', id: 'free' },
+    { name: 'Pro', price: '2900', leads: '1,000', tracking: true, heatmap: false, color: '#2563eb', id: 'pro' },
+    { name: 'Premium', price: '9900', leads: '5,000', tracking: true, heatmap: true, color: '#7c3aed', id: 'premium' },
+    { name: 'Extra Premium', price: '19900', leads: 'Unlimited', tracking: true, heatmap: true, color: '#db2777', id: 'extra_premium' },
   ];
 
   const handleSubscribe = async (plan: any) => {
@@ -77,6 +77,18 @@ const Pricing: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                     <CheckCircle sx={{ fontSize: 18, mr: 1, color: 'green' }} />
                     <Typography variant="body2">Chat History</Typography>
+                  </Box>
+                )}
+                {plan.tracking && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <CheckCircle sx={{ fontSize: 18, mr: 1, color: 'green' }} />
+                    <Typography variant="body2">Session Tracking</Typography>
+                  </Box>
+                )}
+                {plan.heatmap && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <CheckCircle sx={{ fontSize: 18, mr: 1, color: 'green' }} />
+                    <Typography variant="body2">Heatmap Analysis</Typography>
                   </Box>
                 )}
               </Box>
