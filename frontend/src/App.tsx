@@ -10,6 +10,8 @@ import Overview from './pages/Overview';
 import Leads from './pages/Leads';
 import Inbox from './pages/Inbox';
 import Bookings from './pages/Bookings';
+import Sessions from './pages/Sessions';
+import Heatmap from './pages/Heatmap';
 import Pricing from './pages/Pricing';
 import Settings from './pages/Settings';
 import Layout from './components/Layout';
@@ -35,6 +37,22 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <Overview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sessions"
+              element={
+                <ProtectedRoute>
+                  <Sessions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/heatmap"
+              element={
+                <ProtectedRoute>
+                  <Heatmap />
                 </ProtectedRoute>
               }
             />

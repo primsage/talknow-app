@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, AppBar, Toolbar, Typography, IconButton, Avatar } from '@mui/material';
-import { Dashboard, Chat, Event, People, Settings, ExitToApp, Build } from '@mui/icons-material';
+import { Dashboard, Chat, Event, People, Settings, ExitToApp, Build, Mouse, Assessment } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -16,6 +16,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     { text: 'Inbox', icon: <Chat />, path: '/inbox' },
     { text: 'Bookings', icon: <Event />, path: '/bookings' },
     { text: 'Leads', icon: <People />, path: '/leads' },
+    { text: 'Sessions', icon: <Mouse />, path: '/sessions' },
+    { text: 'Heatmap', icon: <Assessment />, path: '/heatmap' },
     { text: 'Pricing', icon: <People />, path: '/pricing' },
     { text: 'Settings', icon: <Settings />, path: '/settings' },
   ];

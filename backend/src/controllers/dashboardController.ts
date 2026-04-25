@@ -3,6 +3,7 @@ import Lead from '../models/Lead';
 import Booking from '../models/Booking';
 import Message from '../models/Message';
 import Business from '../models/Business';
+import Session from '../models/Session';
 
 export const getStats = async (req: Request, res: Response) => {
   try {
@@ -23,6 +24,41 @@ export const getStats = async (req: Request, res: Response) => {
       totalBookings,
       totalChats: activeChats.length
     });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const getSessions = async (req: Request, res: Response) => {
+  try {
+    const businessId = (req as any).user.businessId;
+    const sessions = await Session.find({ businessId }).sort({ updatedAt: -1 });
+    res.json(sessions);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const getHeatmapData = async (req: Request, res: Response) => {
+  try {
+    const businessId = (req as any).user.businessId;
+    const url = req.query['url'] as string;
+
+    if (!url) return res.status(400).json({ message: 'URL is required' });
+
+    const sessions = await Session.find({
+      businessId,
+      'events.url': url,
+      'events.type': 'click'
+    });
+
+    const clicks = sessions.flatMap(s =>
+      s.events
+        .filter(e => e.type === 'click' && e.url === url)
+        .map(e => ({ x: e.data.x, y: e.data.y }))
+    );
+
+    res.json(clicks);
   } catch (err: any) {
     res.status(500).json({ message: err.message });
   }

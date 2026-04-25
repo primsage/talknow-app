@@ -3,6 +3,7 @@ import { Fab, Box, Paper, IconButton, Typography, List, ListItem, ListItemText, 
 import { Chat, WhatsApp, Event, Phone, Message, Close, Send } from '@mui/icons-material';
 import axios from 'axios';
 import { io, Socket } from 'socket.io-client';
+import Tracker from '../api/Tracker';
 
 const API_URL = 'http://localhost:5000/api';
 const SOCKET_URL = 'http://localhost:5000';
@@ -21,6 +22,8 @@ const Widget: React.FC = () => {
       try {
         const res = await axios.get(`${API_URL}/widget/config/${businessId}`);
         setConfig(res.data);
+        // Initialize Tracker once we have the businessId
+        new Tracker(businessId);
       } catch (err) {
         console.error('Failed to load widget config', err);
       }
