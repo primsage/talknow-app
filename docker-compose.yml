@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/talknow
+      - PORT=5000
+      - JWT_SECRET=supersecret
+    depends_on:
+      - mongodb
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+
+  widget:
+    build:
+      context: ./widget
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./widget:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+
+volumes:
+  mongodb_data:
