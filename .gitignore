@@ -10,3 +10,7 @@ widget/node_modules/
 backend/dist/
 frontend/dist/
 widget/dist/
+coverage/
+.cache/
+.vite/
+*.tsbuildinfo
