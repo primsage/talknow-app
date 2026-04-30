@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Chip, IconButton } from '@mui/material';
 import { Delete, PersonAdd } from '@mui/icons-material';
 import api from '../api/axios';
+import { useNotify } from '../context/NotificationContext';
 
 const Team: React.FC = () => {
+  const { notify } = useNotify();
   const [team, setTeam] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [newAgent, setNewAgent] = useState({ name: '', email: '', password: '' });
@@ -27,8 +29,9 @@ const Team: React.FC = () => {
       setOpen(false);
       setNewAgent({ name: '', email: '', password: '' });
       fetchTeam();
+      notify('Agent added successfully!', 'success');
     } catch (err) {
-      alert('Failed to add agent');
+      notify('Failed to add agent', 'error');
     }
   };
 
@@ -37,8 +40,9 @@ const Team: React.FC = () => {
     try {
       await api.delete(`/team/${id}`);
       fetchTeam();
+      notify('Agent removed', 'info');
     } catch (err) {
-      alert('Failed to remove agent');
+      notify('Failed to remove agent', 'error');
     }
   };
 

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import api from '../api/axios';
+import { useNotify } from '../context/NotificationContext';
 
 const AdminPanel: React.FC = () => {
+  const { notify } = useNotify();
   const [businesses, setBusinesses] = useState<any[]>([]);
   const [selectedBusiness, setSelectedBusiness] = useState<any>(null);
   const [open, setOpen] = useState(false);
@@ -29,8 +31,9 @@ const AdminPanel: React.FC = () => {
       });
       setOpen(false);
       fetchData();
+      notify('Subscription updated successfully', 'success');
     } catch (err) {
-      alert('Update failed');
+      notify('Update failed', 'error');
     }
   };
 

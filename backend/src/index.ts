@@ -74,7 +74,8 @@ io.on('connection', (socket) => {
       await message.save();
 
       io.to(visitorId).emit('receive_message', message);
-      // Also notify business owner/agents if needed
+      // Also notify business owner/agents
+      io.to(`business_${businessId}`).emit('receive_message', message);
     } catch (err) {
       console.error('Error saving message:', err);
     }

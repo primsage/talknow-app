@@ -7,6 +7,7 @@ export interface IBusiness extends Document {
   widgetSettings: {
     primaryColor: string;
     welcomeText: string;
+    whatsappNumber?: string;
     logoUrl?: string;
     enabledFeatures: string[];
     businessHours: {
@@ -43,6 +44,7 @@ const BusinessSchema: Schema = new Schema({
   widgetSettings: {
     primaryColor: { type: String, default: '#007bff' },
     welcomeText: { type: String, default: 'How can we help you today?' },
+    whatsappNumber: { type: String },
     logoUrl: { type: String },
     enabledFeatures: { type: [String], default: ['live_chat', 'whatsapp', 'booking', 'callback', 'message'] },
     businessHours: [{

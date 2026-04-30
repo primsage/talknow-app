@@ -3,13 +3,30 @@ import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText
 import { Dashboard, Chat, Event, People, Settings, ExitToApp, Build, Mouse, Assessment, AccountCircle } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useNotify } from '../context/NotificationContext';
+import { io } from 'socket.io-client';
 
 const drawerWidth = 240;
+const SOCKET_URL = 'http://localhost:5000';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { notify } = useNotify();
+
+  React.useEffect(() => {
+    if (user) {
+      const socket = io(SOCKET_URL);
+      socket.emit('join_room', `business_${user.businessId}`);
+      socket.on('receive_message', (msg) => {
+        if (msg.sender === 'visitor') {
+          notify(`New message from ${msg.visitorName || 'Visitor'}`, 'info');
+        }
+      });
+      return () => { socket.disconnect(); };
+    }
+  }, [user]);
 
   const menuItems = [
     { text: 'Overview', icon: <Dashboard />, path: '/dashboard' },

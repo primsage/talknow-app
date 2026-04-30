@@ -2,8 +2,10 @@ import React from 'react';
 import { Box, Typography, Paper, Grid, Button, Divider } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
 import api from '../api/axios';
+import { useNotify } from '../context/NotificationContext';
 
 const Pricing: React.FC = () => {
+  const { notify } = useNotify();
   const plans = [
     { name: 'Free', price: '0', leads: '50', tracking: false, heatmap: false, color: '#64748b', id: 'free' },
     { name: 'Pro', price: '2900', leads: '1,000', tracking: true, heatmap: false, color: '#2563eb', id: 'pro' },
@@ -31,9 +33,9 @@ const Pricing: React.FC = () => {
               plan: data.plan,
               leadsLimit: data.leadsLimit
             });
-            alert('Payment Successful!');
+            notify('Payment Successful!', 'success');
           } catch (err) {
-            alert('Payment Verification Failed');
+            notify('Payment Verification Failed', 'error');
           }
         },
         prefill: {
@@ -46,7 +48,7 @@ const Pricing: React.FC = () => {
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
     } catch (err) {
-      alert('Failed to initiate payment');
+      notify('Failed to initiate payment', 'error');
     }
   };
 
