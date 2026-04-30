@@ -26,4 +26,6 @@ const LeadSchema: Schema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+LeadSchema.index({ businessId: 1, createdAt: -1 });
+
 export default mongoose.model<ILead>('Lead', LeadSchema);

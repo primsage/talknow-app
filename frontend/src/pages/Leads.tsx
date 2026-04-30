@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Chip } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Chip, Button } from '@mui/material';
+import { Download } from '@mui/icons-material';
 import api from '../api/axios';
 
 const Leads: React.FC = () => {
@@ -17,10 +18,29 @@ const Leads: React.FC = () => {
     fetchLeads();
   }, []);
 
+  const handleExport = async () => {
+    try {
+      const response = await api.get('/dashboard/leads/export', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'leads.csv');
+      document.body.appendChild(link);
+      link.click();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <Box>
-      <Typography variant="h5" gutterBottom>Leads</Typography>
-      <TableContainer component={Paper} sx={{ mt: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <Typography variant="h5">Leads</Typography>
+        <Button variant="outlined" startIcon={<Download />} onClick={handleExport}>
+          Export CSV
+        </Button>
+      </Box>
+      <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>

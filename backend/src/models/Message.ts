@@ -24,4 +24,6 @@ const MessageSchema: Schema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+MessageSchema.index({ businessId: 1, visitorId: 1, createdAt: 1 });
+
 export default mongoose.model<IMessage>('Message', MessageSchema);

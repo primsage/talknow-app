@@ -29,6 +29,24 @@ export const getStats = async (req: Request, res: Response) => {
   }
 };
 
+export const exportLeads = async (req: Request, res: Response) => {
+  try {
+    const businessId = (req as any).user.businessId;
+    const leads = await Lead.find({ businessId }).sort({ createdAt: -1 });
+
+    let csv = 'Name,Email,Phone,Type,Status,Date\n';
+    leads.forEach(l => {
+      csv += `${l.name},${l.email || ''},${l.phone || ''},${l.type},${l.status},${l.createdAt.toISOString()}\n`;
+    });
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=leads.csv');
+    res.send(csv);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 export const getSessions = async (req: Request, res: Response) => {
   try {
     const businessId = (req as any).user.businessId;

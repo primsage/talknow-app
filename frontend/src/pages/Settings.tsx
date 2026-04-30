@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, TextField, Button, Typography, Switch, FormControlLabel, Divider, Grid } from '@mui/material';
 import api from '../api/axios';
+import { useNotify } from '../context/NotificationContext';
 
 const Settings: React.FC = () => {
+  const { notify } = useNotify();
   const [settings, setSettings] = useState({
     primaryColor: '#007bff',
     welcomeText: 'How can we help you today?',
+    whatsappNumber: '',
     enabledFeatures: ['live_chat', 'whatsapp', 'booking', 'callback', 'message'],
   });
 
@@ -16,9 +19,9 @@ const Settings: React.FC = () => {
   const handleSave = async () => {
     try {
       await api.put('/dashboard/widget-settings', settings);
-      alert('Settings saved!');
+      notify('Settings saved successfully!', 'success');
     } catch (err) {
-      alert('Failed to save settings');
+      notify('Failed to save settings', 'error');
     }
   };
 
@@ -42,6 +45,13 @@ const Settings: React.FC = () => {
               label="Welcome Text"
               value={settings.welcomeText}
               onChange={(e) => setSettings({ ...settings, welcomeText: e.target.value })}
+              sx={{ mb: 3 }}
+            />
+            <TextField
+              fullWidth
+              label="WhatsApp Number (with country code)"
+              value={settings.whatsappNumber}
+              onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
               sx={{ mb: 3 }}
             />
           </Grid>

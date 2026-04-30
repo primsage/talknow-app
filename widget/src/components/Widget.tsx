@@ -65,15 +65,37 @@ const Widget: React.FC = () => {
     }
   };
 
+  const isBusinessOpen = () => {
+    if (!config?.widgetSettings?.businessHours) return true;
+    const now = new Date();
+    const day = now.toLocaleDateString('en-US', { weekday: 'long' });
+    const hours = config.widgetSettings.businessHours.find((h: any) => h.day === day);
+
+    if (!hours || !hours.enabled) return false;
+
+    const [openH, openM] = hours.open.split(':').map(Number);
+    const [closeH, closeM] = hours.close.split(':').map(Number);
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const openTime = openH * 60 + openM;
+    const closeTime = closeH * 60 + closeM;
+
+    return currentTime >= openTime && currentTime <= closeTime;
+  };
+
   const renderContent = () => {
+    const isOpen = isBusinessOpen();
+
     switch (view) {
       case 'menu':
         return (
           <List>
             <ListItem disablePadding>
-              <ListItemButton onClick={() => setView('chat')}>
-                <ListItemIcon><Chat color="primary" /></ListItemIcon>
-                <ListItemText primary="Live Chat" secondary="Chat with us now" />
+              <ListItemButton onClick={() => setView('chat')} disabled={!isOpen}>
+                <ListItemIcon><Chat color={isOpen ? "primary" : "disabled"} /></ListItemIcon>
+                <ListItemText
+                  primary="Live Chat"
+                  secondary={isOpen ? "Chat with us now" : "We are currently offline"}
+                />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>

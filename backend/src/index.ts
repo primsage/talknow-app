@@ -28,6 +28,7 @@ import adminRoutes from './routes/adminRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import integrationRoutes from './routes/integrationRoutes';
 import teamRoutes from './routes/teamRoutes';
+import webhookRoutes from './routes/webhookRoutes';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
@@ -36,6 +37,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/integration', integrationRoutes);
 app.use('/api/team', teamRoutes);
+app.use('/api/webhook', webhookRoutes);
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/talknow';

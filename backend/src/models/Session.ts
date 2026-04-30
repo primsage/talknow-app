@@ -34,4 +34,7 @@ const SessionSchema: Schema = new Schema({
   }]
 }, { timestamps: true });
 
+SessionSchema.index({ businessId: 1, sessionId: 1 });
+SessionSchema.index({ businessId: 1, updatedAt: -1 });
+
 export default mongoose.model<ISession>('Session', SessionSchema);

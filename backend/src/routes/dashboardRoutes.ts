@@ -8,6 +8,7 @@ router.use(authenticate);
 
 router.get('/stats', getStats);
 router.get('/leads', getLeads);
+router.get('/leads/export', exportLeads);
 router.get('/bookings', getBookings);
 router.put('/widget-settings', updateWidgetSettings);
 router.get('/sessions', getSessions);

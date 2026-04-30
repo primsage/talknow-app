@@ -3,21 +3,24 @@ import { Box, Button, TextField, Typography, Paper, Container } from '@mui/mater
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import { useNotify } from '../context/NotificationContext';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { notify } = useNotify();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const res = await api.post('/auth/login', { email, password });
       login(res.data.user, res.data.token);
+      notify('Logged in successfully', 'success');
       navigate('/dashboard');
     } catch (err) {
-      alert('Login failed');
+      notify('Login failed. Please check your credentials.', 'error');
     }
   };
 

@@ -20,7 +20,7 @@ shadowRoot.appendChild(styleSlot);
 
 ReactDOM.createRoot(mountPoint).render(
   <React.StrictMode>
-    <StyledEngineProvider injectFirst>
+    <StyledEngineProvider injectFirst cache={undefined}>
       <ThemeProvider theme={theme}>
         <Widget />
       </ThemeProvider>
