@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, Typography, Button, Container, Grid, Card, CardContent, Stack } from '@mui/material';
+import { Box, Typography, Button, Container, Grid, Card, CardContent, Stack, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Chat, Event, Mouse, Assessment, WhatsApp, Security } from '@mui/icons-material';
+import { Chat, Event, Mouse, Assessment, WhatsApp, Security, Code, Settings, Rocket } from '@mui/icons-material';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -45,6 +45,36 @@ const LandingPage: React.FC = () => {
               />
             </Grid>
           </Grid>
+        </Container>
+      </Box>
+
+      {/* How it Works Section */}
+      <Box sx={{ py: 15, bgcolor: '#f1f5f9' }}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
+            Get Started in 3 Simple Steps
+          </Typography>
+          <Grid container spacing={4} sx={{ mt: 8 }}>
+            {[
+              { title: '1. Create Account', desc: 'Sign up and configure your widget settings.', icon: <Settings fontSize="large" color="primary" /> },
+              { title: '2. Install Script', desc: 'Copy and paste one line of code into your site.', icon: <Code fontSize="large" color="primary" /> },
+              { title: '3. Start Growing', desc: 'Receive leads and chat with customers instantly.', icon: <Rocket fontSize="large" color="primary" /> },
+            ].map((step, i) => (
+              <Grid size={{ xs: 12, md: 4 }} key={i} sx={{ textAlign: 'center' }}>
+                <Box sx={{ mb: 3 }}>{step.icon}</Box>
+                <Typography variant="h5" sx={{ fontWeight: "bold" }} gutterBottom>{step.title}</Typography>
+                <Typography variant="body1" color="textSecondary">{step.desc}</Typography>
+              </Grid>
+            ))}
+          </Grid>
+
+          <Paper sx={{ mt: 10, p: 4, bgcolor: '#1e293b', color: 'white', borderRadius: 4 }}>
+            <Typography variant="h6" gutterBottom color="primary">Installation Code Snippet</Typography>
+            <Typography variant="body2" sx={{ opacity: 0.8, mb: 2 }}>Just add this before your &lt;/body&gt; tag:</Typography>
+            <Box component="pre" sx={{ bgcolor: '#0f172a', p: 2, borderRadius: 2, overflowX: 'auto', border: '1px solid #334155' }}>
+              <code>{`<script src="https://cdn.talknow.com/widget.js" data-business-id="YOUR_ID"></script>`}</code>
+            </Box>
+          </Paper>
         </Container>
       </Box>
 

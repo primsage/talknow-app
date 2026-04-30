@@ -15,12 +15,15 @@ import Sessions from './pages/Sessions';
 import Heatmap from './pages/Heatmap';
 import Pricing from './pages/Pricing';
 import Settings from './pages/Settings';
+import Team from './pages/Team';
+import AdminPanel from './pages/AdminPanel';
 import Layout from './components/Layout';
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ children, roles }) => {
   const { user, loading } = useAuth();
   if (loading) return null;
   if (!user) return <Navigate to="/login" />;
+  if (roles && !roles.includes(user.role)) return <Navigate to="/dashboard" />;
   return <Layout>{children}</Layout>;
 };
 
@@ -38,6 +41,22 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <Overview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/team"
+              element={
+                <ProtectedRoute roles={['business_owner']}>
+                  <Team />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute roles={['admin']}>
+                  <AdminPanel />
                 </ProtectedRoute>
               }
             />
