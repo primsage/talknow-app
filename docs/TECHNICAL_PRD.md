@@ -1,74 +1,56 @@
 # Technical PRD - TalkNow
 
-## 1. Technical Goals
-To build a multi-tenant SaaS that is secure, performant, and easily embeddable while providing advanced features like session tracking and heatmap visualization.
+## 1. Core Technical Principles
+TalkNow is engineered for high availability, multi-tenant isolation, and minimal performance impact on client websites.
 
-## 2. Core Technical Architecture
-The application is a monorepo-style project (managed with Docker Compose) consisting of:
--   **`backend/`**: Node.js Express server with TypeScript.
--   **`frontend/`**: Vite + React 19 dashboard.
--   **`widget/`**: Vite + React 19 widget (built as IIFE).
+## 2. Multi-Tenant Data Isolation
+We implement **Logical Separation** at the database layer:
+-   **Discriminator Fields:** Every record (User, Business, Lead, Session) contains a `businessId`.
+-   **Middleware Enforcement:** The `authMiddleware.ts` ensures that the `req.user.businessId` matches the requested resource's `businessId`.
+-   **Global Query Filters:** All Mongoose queries are scoped to the current tenant to prevent cross-tenant data leakage.
 
-## 3. Database Schema (MongoDB/Mongoose)
+## 3. High-Performance Session Tracking
+The session tracking module (Heatmaps/Recordings) is built for speed:
+-   **Throttling:** Scroll events are throttled to 250ms; mouse moves are throttled to 100ms.
+-   **Compression:** Event payloads are sent as minimized JSON to reduce bandwidth.
+-   **Storage Optimization:** Session events are stored in a sub-document array or a separate `Events` collection to keep the main `Session` document lean.
 
-### 3.1 User Model
-- `email`: String (Unique)
-- `password`: String (Hashed)
-- `role`: Enum ('admin', 'business_owner', 'agent')
-- `businessId`: Reference to Business
+## 4. Advanced Security Hardening
+-   **Rate Limiting:** `express-rate-limit` is applied to sensitive endpoints (Login, Lead Submission) to prevent brute-force and DoS attacks.
+-   **JWT Security:**
+    -   Tokens have a 24-hour expiry.
+    -   Secrets are managed via environment variables.
+-   **Content Security Policy (CSP):** The widget loader script is designed to be compatible with strict CSPs. We provide specific hash/nonce recommendations for host websites.
+-   **Cross-Origin Resource Sharing (CORS):** The backend dynamically allows origins based on the registered `website` field in the Business document.
 
-### 3.2 Business Model
-- `name`: String
-- `website`: String
-- `subscription`:
-  - `plan`: Enum ('free', 'pro', 'premium', 'extra_premium')
-  - `leadsUsed`: Number
-  - `leadsLimit`: Number
-- `widgetSettings`:
-  - `primaryColor`: String
-  - `welcomeMessage`: String
-- `integrations`:
-  - `googleMeet`: { accessToken, refreshToken }
-  - `zoom`: { accessToken }
+## 5. Socket.io Logic & Scalability
+The real-time engine is optimized for high concurrency:
+-   **Namespace Isolation:** All widget-related traffic is handled in a `/widget` namespace.
+-   **State Management:** Sockets are used for transient state (e.g., "Visitor Typing"); persistent state (Chat History) is synced from MongoDB.
+-   **Scaling:** For horizontal scaling, we utilize the `@socket.io/redis-adapter` to sync events across multiple Node.js instances.
 
-### 3.3 Lead Model
-- `businessId`: Reference to Business
-- `type`: Enum ('chat', 'callback', 'whatsapp')
-- `visitorInfo`: { name, email, phone, browser, country }
-- `status`: Enum ('new', 'contacted', 'converted')
+## 6. Database Optimization & Indexing
+To ensure fast dashboard loading even with millions of leads:
+-   **Compound Indexes:**
+    -   `{ businessId: 1, createdAt: -1 }` (For fast lead listing)
+    -   `{ businessId: 1, type: 1 }` (For filtered analytics)
+-   **Aggregation Pipelines:** Used for the main dashboard stats to calculate conversion rates and lead counts in a single pass.
 
-### 3.4 Session Model
-- `businessId`: Reference to Business
-- `sessionId`: String (Unique per visitor session)
-- `events`: Array of { type, x, y, timestamp, scrollPos }
+## 7. Widget Injection Mechanism
+We use a **Bootloader Pattern**:
+1.  **Tiny Script:** A small `<script>` snippet is placed on the host site.
+2.  **Async Load:** It creates a dynamic `<script>` tag pointing to our CDN/Server for `widget.js`.
+3.  **Encapsulation:**
+    ```typescript
+    const shadowRoot = host.attachShadow({ mode: 'closed' });
+    const root = document.createElement('div');
+    shadowRoot.appendChild(root);
+    ReactDOM.createRoot(root).render(<App />);
+    ```
+    -   **Mode 'closed'** prevents host site scripts from accessing the widget internals.
 
-## 4. Key Implementation Details
-
-### 4.1 Multi-Tenancy
-Multi-tenancy is achieved at the data level. Every document (Lead, Session, Message, User) is associated with a `businessId`. Middleware ensures that a `business_owner` can only access data belonging to their own `businessId`.
-
-### 4.2 Widget Embedding (IIFE + Shadow DOM)
-- **Build Process**: The widget is bundled into a single JavaScript file using Vite's `lib` mode.
-- **Injection**: A loader script creates a `div` on the host page, attaches a Shadow Root, and mounts the React application inside it.
-- **Isolation**: Shadow DOM prevents the host website's CSS from affecting the widget UI.
-
-### 4.3 Session Tracking & Heatmaps
-- **Capture**: The widget listens for `click` and `scroll` events.
-- **Throttling**: Events are batched and sent to the `/api/widget/track` endpoint every 5 seconds to minimize network overhead.
-- **Visualization**: The dashboard renders the tracked website inside an `iframe`. A transparent `canvas` is overlaid on the iframe, and click coordinates are plotted as a heatmap using libraries like `simpleheat`.
-
-### 4.4 Real-time Chat
-- **Engine**: Socket.io.
-- **Rooms**: Sockets join rooms based on `businessId` and `visitorId` to ensure private communication between visitors and agents.
-
-## 5. API Design Principles
-- **RESTful**: standard GET, POST, PUT, DELETE methods.
-- **Validation**: Every request body is validated using **Zod** schemas before reaching the controller.
-- **Security**: JWT tokens are passed in the `Authorization: Bearer <token>` header.
-
-## 6. Deployment Workflow
-- **Dockerization**: Each service has its own `Dockerfile`.
-- **Orchestration**: `docker-compose.yml` manages the networking between the backend, frontend, widget, and MongoDB.
-- **Production Build**:
-  - Frontend and Widget are compiled to static assets.
-  - Backend is compiled from TS to JS using `tsc`.
+## 8. CI/CD & Production Standards
+-   **Environment Parity:** Docker is used for Local, Staging, and Production to ensure "it works on my machine" consistency.
+-   **Logging:** Centralized logging using Winston/Morgan with levels (Error, Warn, Info, Debug).
+-   **Monitoring:** Sentry integration for real-time error tracking across the frontend and backend.
+-   **Health Checks:** `/api/health` endpoint for Kubernetes/Docker container monitoring.

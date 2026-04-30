@@ -1,91 +1,130 @@
 # API Documentation - TalkNow
 
-## 1. Authentication (`/api/auth`)
+## 1. Overview
+The TalkNow API is a RESTful interface that uses JSON for both request and response payloads. All dates are returned in ISO 8601 format.
 
-### Register
-`POST /register`
-- **Body**: `{ email, password, name, businessName }`
-- **Description**: Registers a new business owner and creates their business profile.
-
-### Login
-`POST /login`
-- **Body**: `{ email, password }`
-- **Response**: `{ token, user: { id, role, businessId } }`
+- **Base URL:** `http://localhost:5000/api`
+- **Authentication:** JWT Bearer Token
 
 ---
 
-## 2. Widget API (`/api/widget`)
-*Note: These endpoints are consumed by the embeddable widget on host websites.*
+## 2. Authentication (`/auth`)
 
-### Get Widget Configuration
-`GET /config/:businessId`
-- **Description**: Fetches theme colors, welcome messages, and plan details for the widget.
+### User Registration
+`POST /auth/register`
+
+**Request Body:**
+```json
+{
+  "email": "owner@example.com",
+  "password": "Password@123",
+  "name": "John Doe",
+  "businessName": "Acme Corp"
+}
+```
+
+**Success Response (201 Created):**
+```json
+{
+  "message": "User registered successfully",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "64f1a2b3c4d5e6f7g8h9i0j1",
+    "email": "owner@example.com",
+    "role": "business_owner",
+    "businessId": "64f1a2b3c4d5e6f7g8h9i0j2"
+  }
+}
+```
+
+---
+
+## 3. Widget Operations (`/widget`)
 
 ### Submit Lead
-`POST /lead/:businessId`
-- **Body**: `{ type, name, email, phone, message, preferredTime, visitorInfo }`
-- **Description**: Creates a new lead. Returns 403 if the business has exceeded its monthly lead limit.
+`POST /widget/lead/:businessId`
 
-### Track Events
-`POST /track`
-- **Body**: `{ businessId, sessionId, events: [{ type, x, y, scrollPos, timestamp }], screen: { width, height } }`
-- **Description**: Batches visitor interaction events for heatmaps and recordings. Restricted to paid plans.
+**Path Parameters:**
+- `businessId`: The unique ID of the business.
 
-### Get Chat History
-`GET /chat/:businessId/:visitorId`
-- **Description**: Retrieves previous messages for a specific visitor session.
+**Request Body:**
+```json
+{
+  "type": "chat",
+  "name": "Jane Visitor",
+  "email": "jane@visitor.com",
+  "phone": "+1234567890",
+  "message": "I'm interested in your services.",
+  "visitorInfo": {
+    "browser": "Chrome",
+    "os": "MacOS",
+    "country": "USA",
+    "referrer": "https://google.com"
+  }
+}
+```
 
----
+**Success Response (201 Created):**
+```json
+{
+  "status": "success",
+  "leadId": "74f1a2b3c4d5e6f7g8h9i0k3"
+}
+```
 
-## 3. Dashboard API (`/api/dashboard`)
-*Note: Requires Authorization: Bearer <token>*
-
-### Get Stats
-`GET /stats`
-- **Description**: Returns aggregate data (total leads, bookings, conversion rate) for the logged-in business.
-
-### Get Leads
-`GET /leads`
-- **Description**: List all leads for the business with pagination and filtering.
-
-### Get Heatmap Data
-`GET /heatmap/:businessId`
-- **Description**: Returns all click/scroll events for a business within a timeframe.
-
----
-
-## 4. Team Management (`/api/team`)
-*Note: Requires Authorization: Bearer <token>*
-
-### List Team
-`GET /`
-- **Description**: Returns all agents associated with the business.
-
-### Add Member
-`POST /`
-- **Body**: `{ name, email, password, role }`
-- **Description**: Creates a new agent account for the business.
+**Error Response (403 Forbidden):**
+```json
+{
+  "message": "Lead limit reached for this business. Please upgrade your plan."
+}
+```
 
 ---
 
-## 5. Integrations & Payments
+## 4. Dashboard Operations (`/dashboard`)
+*Requires Authorization: Bearer <token>*
 
-### Connect Zoom
-`GET /integrations/zoom/connect`
-- **Description**: Initiates OAuth flow for Zoom.
+### Get Analytics Stats
+`GET /dashboard/stats`
 
-### Razorpay Webhook
-`POST /payments/webhook`
-- **Description**: Handles subscription updates and successful payment notifications.
+**Success Response (200 OK):**
+```json
+{
+  "totalLeads": 156,
+  "totalBookings": 42,
+  "activeSessions": 12,
+  "conversionRate": 3.4,
+  "leadsByDay": [
+    { "date": "2023-10-01", "count": 12 },
+    { "date": "2023-10-02", "count": 15 }
+  ]
+}
+```
 
 ---
 
-## 6. Error Handling
-The API uses standard HTTP status codes:
-- `200 OK`: Success
-- `201 Created`: Resource created successfully
-- `400 Bad Request`: Validation error or missing parameters
-- `401 Unauthorized`: Missing or invalid JWT token
-- `403 Forbidden`: Insufficient permissions or subscription limit reached
-- `404 Not Found`: Resource does not exist
-- `500 Internal Server Error`: Something went wrong on our end
+## 5. Error Codes Reference
+
+| Status | Code | Description |
+|:---|:---|:---|
+| 400 | `BAD_REQUEST` | Validation failed or missing required fields. |
+| 401 | `UNAUTHORIZED` | Invalid or expired token. |
+| 403 | `FORBIDDEN` | Permission denied or subscription limit reached. |
+| 404 | `NOT_FOUND` | The requested resource does not exist. |
+| 429 | `TOO_MANY_REQUESTS` | Rate limit exceeded. |
+| 500 | `INTERNAL_SERVER_ERROR` | An unexpected error occurred on the server. |
+
+---
+
+## 6. Real-time Events (Socket.io)
+
+### Namespace: `/widget`
+
+#### Client to Server
+- `join`: `{ businessId, visitorId }` - Joins the private chat room.
+- `message:send`: `{ text, sender: 'visitor' }` - Sends a new chat message.
+- `typing:start`: - Notifies agents that the visitor is typing.
+
+#### Server to Client
+- `message:receive`: `{ text, sender: 'agent', timestamp }` - Received message from agent.
+- `agent:status`: `{ online: true }` - Agent availability update.

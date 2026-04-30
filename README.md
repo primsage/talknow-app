@@ -1,74 +1,67 @@
-# TalkNow - Multi-Tenant Website Chat & Lead Widget
+# TalkNow - Enterprise-Grade Website Chat & Lead Infrastructure
 
-TalkNow is a powerful SaaS platform that allows businesses to engage website visitors through a customizable widget. It combines Live Chat, Meeting Booking (Zoom/Google Meet), WhatsApp integration, and advanced visitor tracking (Heatmaps & Session Recordings) into a single solution.
+TalkNow is a high-performance, multi-tenant SaaS platform that enables businesses to capture and convert website visitors into loyal customers. It provides a unified, embeddable widget combining Live Chat, Meeting Scheduling, and deep Visitor Analytics (Heatmaps & Session Recordings).
 
-![TalkNow Overview](https://via.placeholder.com/800x400?text=TalkNow+Dashboard+Preview)
+![TalkNow Banner](https://via.placeholder.com/1200x400?text=TalkNow+SaaS+Platform)
 
-## 🚀 Key Features
+## 🌟 Strategic Features
 
-- **Omni-channel Widget:** Live Chat, Google Meet, Zoom, and WhatsApp lead capture.
-- **Advanced Analytics:** Visitor heatmaps and session recordings (available on Pro/Premium plans).
-- **Multi-tenant Architecture:** Securely host thousands of businesses with isolated data.
-- **Automated Bookings:** Seamless integration with Google Calendar and Zoom for scheduling.
-- **Admin Dashboards:** Comprehensive control for both Super Admins and Business Owners.
+- **Omni-Channel Engagement:** Integrated Live Chat, Google Meet, Zoom, and WhatsApp.
+- **Visitor Intelligence:** Real-time session recordings and click-based heatmaps.
+- **Shadow DOM Isolation:** Zero CSS leakage between the widget and host website.
+- **Automated Scheduling:** Synchronized booking with Google Calendar and Zoom.
+- **Enterprise Security:** JWT-based authentication, RBAC, and rate-limiting.
+- **Subscription-Ready:** Tiered plans managed via Razorpay integration.
 
-## 📁 Project Structure
+## 📁 Repository Structure
 
 ```text
-├── backend/            # Node.js Express API (TypeScript)
-├── frontend/           # React 19 Dashboard (MUI v6)
-├── widget/             # Embeddable React Widget (IIFE)
-├── docs/               # Detailed documentation and specifications
+├── backend/            # Express API with TypeScript (Domain-driven logic)
+├── frontend/           # React 19 Dashboard (Enterprise management)
+├── widget/             # High-performance React Widget (IIFE bundle)
+├── docs/               # Technical Specifications & Documentation
 └── docker-compose.yml  # Local development orchestration
 ```
 
-## 🛠️ Quick Start
+## 🚀 Quick Start (Development)
 
-### Prerequisites
-- Docker & Docker Compose installed.
+### 1. Prerequisites
+- Docker & Docker Compose
+- Node.js 20+
 
-### Setup
-1. **Clone the repo:** `git clone https://github.com/your-repo/talknow.git`
-2. **Launch with Docker:**
-   ```bash
-   docker-compose up --build
-   ```
-3. **Access the platform:**
-   - **Dashboard:** [http://localhost:3000](http://localhost:3000)
-   - **API:** [http://localhost:5000](http://localhost:5000)
-   - **Widget:** [http://localhost:3001](http://localhost:3001)
+### 2. Launching the Stack
+```bash
+docker-compose up --build
+```
+- **Dashboard:** [http://localhost:3000](http://localhost:3000)
+- **Backend API:** [http://localhost:5000](http://localhost:5000)
+- **Widget Script:** [http://localhost:3001/widget.js](http://localhost:3001/widget.js)
 
-### Default Admin Credentials
-- **Email:** `admin@talknow.com`
+### 3. Default Credentials
+- **Admin Email:** `admin@talknow.com`
 - **Password:** `Admin@123`
 
-## 📖 Documentation
+## 📖 Comprehensive Documentation
 
-For a deep dive into the platform, please refer to the documents in the `/docs` folder:
+For detailed technical specifications, architectural overviews, and deployment guides, please refer to the `docs/` directory:
 
-- **[Product Requirements (PRD)](./docs/PRD.md)** - Vision and goals.
-- **[Architecture](./docs/ARCHITECTURE.md)** - System design and data flow.
-- **[Technical PRD](./docs/TECHNICAL_PRD.md)** - Deep dive into schemas and logic.
-- **[Feature List](./docs/FEATURE_LIST.md)** - Comprehensive list of capabilities.
-- **[API Reference](./docs/API_DOCS.md)** - Endpoint documentation.
-- **[Design Guide](./docs/DESIGN_GUIDE.md)** - Theme and UI/UX patterns.
-- **[Setup & Integration Guide](./docs/SETUP_GUIDE.md)** - Third-party configuration.
-
-## 💳 Subscription Plans
-
-| Feature | Free | Pro | Premium | Extra Premium |
-| :--- | :---: | :---: | :---: | :---: |
-| Monthly Leads | 50 | Unlimited | Unlimited | Unlimited |
-| Chat History | No | Yes | Yes | Yes |
-| Heatmaps | No | Yes | Yes | Yes |
-| Custom Branding | No | No | No | Yes |
+| Document | Description |
+|:---|:---|
+| 📑 **[PRD](./docs/PRD.md)** | Product strategy, User Stories, and Roadmap. |
+| 🏗️ **[Architecture](./docs/ARCHITECTURE.md)** | C4 diagrams, system components, and infrastructure. |
+| ⚙️ **[Technical PRD](./docs/TECHNICAL_PRD.md)** | Implementation details, Security, and Scalability. |
+| ✨ **[Feature List](./docs/FEATURE_LIST.md)** | Detailed capabilities by user role. |
+| 🔌 **[API Documentation](./docs/API_DOCS.md)** | REST API reference and JSON schemas. |
+| 🎨 **[Design Guide](./docs/DESIGN_GUIDE.md)** | MUI v6 standards and technical UI patterns. |
+| 🛠️ **[Setup Guide](./docs/SETUP_GUIDE.md)** | Production deployment and 3rd-party integrations. |
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React 19, MUI v6, Vite, TypeScript.
+- **Frontend:** React 19, Material UI (MUI) v6, Vite, TypeScript.
 - **Backend:** Node.js, Express, MongoDB (Mongoose), Socket.io.
-- **Services:** Razorpay, SendGrid, Zoom API, Google Calendar API.
+- **DevOps:** Docker, Nginx (recommended), GitHub Actions (recommended).
+- **Integrations:** Razorpay (Payments), SendGrid (Email), Zoom & Google (Meetings).
 
 ---
 
-Built with ❤️ by the TalkNow Team.
+© 2024 TalkNow Team. All rights reserved.

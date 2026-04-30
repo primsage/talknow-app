@@ -1,49 +1,59 @@
 # Design Guide - TalkNow
 
-## 1. Visual Identity
-TalkNow uses a clean, modern "SaaS-style" aesthetic. The interface is designed to be unobtrusive for visitors and highly functional for business owners.
+## 1. Visual Identity & Brand Voice
+TalkNow aims for a professional, trustworthy, and efficient user experience. The design should feel modern and responsive, minimizing friction during setup and daily use.
 
-### Color Palette
-- **Primary Blue:** `#2563eb` (Used for primary actions, branding, and active states)
-- **Secondary Green:** `#10b981` (Used for success messages, "Book Now" buttons, and online status)
-- **Background Gray:** `#f8fafc` (Main background for the dashboard to reduce eye strain)
-- **Surface White:** `#ffffff` (Used for cards, modals, and the widget container)
-- **Text Primary:** `#1e293b` (Dark navy for maximum readability)
+## 2. Color System
+| Token | Hex Code | Usage |
+|:---|:---|:---|
+| `primary` | `#2563eb` | Primary buttons, active navigation, brand elements. |
+| `secondary` | `#10b981` | Success states, booking buttons, online status. |
+| `error` | `#ef4444` | Destructive actions, validation errors. |
+| `background` | `#f8fafc` | Dashboard main background. |
+| `surface` | `#ffffff` | Cards, modals, sidebars. |
+| `text-main` | `#1e293b` | Primary text. |
+| `text-muted` | `#64748b` | Captions, placeholders, inactive states. |
 
-## 2. Typography
-- **Primary Font:** `Inter`, fallback to `Roboto`.
-- **Headings:** Bold weight (600), utilizing `h5` and `h6` for dashboard cards.
-- **Body:** Standard weight (400), with `14px` base size for the dashboard to fit more information.
+## 3. Typography Standards
+- **Font Stack:** `Inter`, `system-ui`, `-apple-system`, `sans-serif`.
+- **H1-H3:** Semi-bold (600) for page titles and section headers.
+- **Body:** Regular (400) at `14px` for the dashboard and `16px` for the landing page.
+- **Monospace:** `JetBrains Mono` or `Courier New` for code snippets and API keys.
 
-## 3. Component Library (MUI v6)
-The project utilizes **Material UI v6**. Key implementation patterns include:
+## 4. UI Component Patterns (MUI v6)
 
-### Layouts
-- **Grid2:** Used exclusively for responsive layouts.
-  - Syntax: `<Grid size={{ xs: 12, md: 6 }}>`
-- **Paper:** Used with a custom border-radius (`12px`) and subtle box-shadow for all dashboard modules.
+### 4.1 Layout Components
+- **Dashboard Shell:** A fixed sidebar with a flexible top navigation bar.
+- **Card Pattern:** All modules must be wrapped in `<Paper elevation={0} />` with a `1px` border and `12px` border-radius.
+- **Grid System:** Use `Grid2` from MUI v6. Standardize on a 12-column layout.
 
-### Buttons
-- **Style:** Rounded corners (`8px`), no uppercase text (`textTransform: 'none'`).
-- **Variants:**
-  - `contained`: Primary actions.
-  - `outlined`: Secondary or destructive actions.
+### 4.2 Interaction Feedback
+- **Buttons:** Use `textTransform: 'none'`. Contained buttons must have a subtle `0.5s` shadow transition on hover.
+- **Loading States:** Use `<Skeleton />` for dashboard cards during initial data fetch instead of full-page spinners.
 
-### Interaction States
-- **Hover:** Subtle background color shifts or scale increases for the floating widget.
-- **Loading:** Circular progress overlays during API calls or data fetching.
+## 5. Widget Technical Design (Shadow DOM)
+The widget must remain completely isolated from the host website's CSS.
+- **Encapsulation:** All React components are mounted inside a `ShadowRoot`.
+- **Style Injection:** Use `CacheProvider` from Emotion to inject styles into the shadow root rather than the document head.
+- **Z-Index Strategy:** The widget container should use a high z-index (e.g., `2147483647`) to ensure it stays on top of all host elements.
 
-## 4. Widget UX Principles
-- **Minimalist Trigger:** The widget should be a small floating action button (FAB) that doesn't obstruct website content.
-- **Shadow DOM:** Ensures that the "Host Website" cannot override widget styles.
-- **Proactive Engagement:** After 5 seconds, a small "speech bubble" greeting appears to encourage interaction.
-- **Direct Redirection:** WhatsApp links should open in a new tab to prevent visitors from leaving the host website.
+## 6. Accessibility & Responsiveness
 
-## 5. Dashboard UX Principles
-- **Density:** Information-dense but organized. Leads and bookings are presented in tables or lists with clear status indicators.
-- **Feedback:** Success/Error toasts (Snackbars) appear after every significant action (e.g., saving settings, adding a team member).
-- **Empty States:** Clear instructions or "Get Started" buttons when no data (leads/bookings) is present.
+### 6.1 Accessibility (WCAG 2.1)
+- **Contrast:** Ensure a minimum contrast ratio of 4.5:1 for text.
+- **Keyboard Nav:** Every interactive element in the widget must be focusable and operable via the `Tab` and `Enter` keys.
+- **Aria Labels:** Provide `aria-label` for all icon-only buttons (e.g., the widget close button).
 
-## 6. Icons
-- **Library:** Lucide React or Material Icons.
-- **Usage:** Used sparingly to provide visual cues (e.g., a phone icon for callback requests, a calendar icon for bookings).
+### 6.2 Responsive Breakpoints
+| Breakpoint | Width | Usage |
+|:---|:---|:---|
+| `xs` | 0px | Mobile (Portrait) - Widget becomes full-screen. |
+| `sm` | 600px | Mobile (Landscape) / Tablets. |
+| `md` | 900px | Small Laptops - Sidebar collapses. |
+| `lg` | 1200px | Standard Desktop. |
+| `xl` | 1536px | Large Displays. |
+
+## 7. Iconography
+- **Library:** `Lucide React`
+- **Stroke Width:** `2px`
+- **Sizing:** Standard icons should be `20px` in the dashboard and `24px` in the widget.
